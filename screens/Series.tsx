@@ -87,7 +87,7 @@ function SeriesScreen({navigation}: any): React.JSX.Element {
               flag = getFlagEmoji(flag);
               var name = category.name.split(' ').slice(1).join(' ');
               return (
-                <View key={category.id} className='w-10/12 h-10 m-2 p-2 flex-row justify-between items-center' style={{ backgroundColor: theme.card }}>
+                <View key={category.id} className='rounded-lg w-10/12 h-10 m-2 p-2 flex-row justify-between items-center' style={{ backgroundColor: theme.card }}>
                   <TouchableOpacity
                     style={{ flex: 1 }}
                     onPress={() =>
@@ -101,7 +101,7 @@ function SeriesScreen({navigation}: any): React.JSX.Element {
                     </Text>
                   </TouchableOpacity>
                   {editMode && (
-                    <TouchableOpacity onPress={() => hideCategory(category.id)}>
+                    <TouchableOpacity onPress={() => hideCategory(category.id)} className='absolute right-3 flex-row items-center'>
                       <MaterialCommunityIcons name="delete" size={24} color={theme.primary} />
                     </TouchableOpacity>
                   )}
@@ -109,19 +109,19 @@ function SeriesScreen({navigation}: any): React.JSX.Element {
               );
             })}
             {hiddenCategoriesList.length > 0 && editMode && (
-              <View style={{ width: '100%', padding: 10, alignItems: 'center' }}>
-                <Text style={{ color: theme.primary, textAlign: 'center', marginBottom: 10 }}>Hidden Categories</Text>
+              <View style={{ width: '100%', alignItems: 'center' }}>
+                <Text style={{ color: theme.primary, marginVertical: 10 }} className='text-lg font-semibold'>Hidden Categories</Text>
                 {hiddenCategoriesList.map((category) => {
                   var flag = category.name.split(' ')[0];
                   flag = getFlagEmoji(flag);
                   var name = category.name.split(' ').slice(1).join(' ');
                   return (
-                    <View key={category.id} className='w-10/12 h-10 m-2 p-2 flex-row justify-between items-center' style={{ backgroundColor: theme.card }}>
+                    <View key={category.id} className='rounded-lg w-10/12 h-10 m-2 p-2 flex-row justify-between items-center' style={{ backgroundColor: theme.card }}>
                       <Text style={{ color: theme.text, textAlign: 'center', flex: 1 }}>
                         {flag} {name}
                       </Text>
                       {editMode && (
-                        <TouchableOpacity onPress={() => showCategory(category.id)}>
+                        <TouchableOpacity onPress={() => showCategory(category.id)} className='absolute right-3 flex-row items-center'>
                           <MaterialCommunityIcons name="undo" size={24} color={theme.primary} />
                         </TouchableOpacity>
                       )}
