@@ -29,6 +29,7 @@ function MoviesViewScreen({ route, navigation }: any): React.JSX.Element {
   const { info }: { info: MovieInfoDTO } = route.params;
 
   let theme = getMaterialYouCurrentTheme(isDarkMode);
+  let darkTheme = getMaterialYouCurrentTheme(true);
 
   useEffect(() => {
     if (info) {
@@ -44,7 +45,7 @@ function MoviesViewScreen({ route, navigation }: any): React.JSX.Element {
   }, []);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ backgroundColor: darkTheme.background, flex: 1 }}>
       <ImageBackground className='w-full h-full' source={{ uri: movieInfo?.background }} imageStyle={{ opacity: 0.15 }} resizeMode='cover'>
         <View className='flex flex-row justify-between'>
           <Text className='text-2xl p-4 font-bold' style={{
@@ -110,8 +111,19 @@ function MoviesViewScreen({ route, navigation }: any): React.JSX.Element {
             className='rounded-lg p-2 w-5/12 flex-1'
             onPress={async () => {
               const videoUrl = await buildURL(MediaType.MOVIE, movieInfo?.stream_id || '', movieInfo?.extension || '');
-              globalVars.isPlayer = true;
-              navigation.push('Player', { url: videoUrl, name: movieInfo?.name });
+              if (videoUrl == null) {
+                return;
+              }
+              Linking.canOpenURL(videoUrl).then((supported) => {
+                if (!supported) {
+                  globalVars.isPlayer = true;
+                  navigation.push('Player', { url: videoUrl, name: movieInfo?.name });
+                } else {
+                  return Linking.openURL(videoUrl);
+                }
+              }).catch((err) => {
+                console.error('An error occurred', err);
+              });
             }}>
             <Text style={{ color: theme.primary }}>Play</Text>
           </Button>

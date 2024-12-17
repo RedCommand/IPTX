@@ -27,14 +27,14 @@ function PlayerScreen({route, navigation}: any) {
   const [playBackRate, setPlayBackRate] = useState<number>(1);
   const [position, setPosition] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
-  const [percentage, setPercentage] = useState<DimensionValue>('0%');
+  // const [percentage, setPercentage] = useState<DimensionValue>('0%');
   const [seek, setSeek] = useState<number>(0);
   const [isSeeking, setIsSeeking] = useState<number>(0);
   const [selectedAudioTrack, setSelectedAudioTrack] = useState<AudioTrackDTO | null>(null);
   const [selectedTextTrack, setSelectedTextTrack] = useState<SubtitleTrackDTO | null>(null);
   const [popupOpened, setPopupOpened] = useState<number>(0);
 
-  var player: VideoRef | null = null;
+  const player = useRef<VideoRef | null>(null);
   const isDarkMode = useColorScheme() === 'dark';
 
   let theme = getMaterialYouCurrentTheme(isDarkMode);
@@ -49,10 +49,10 @@ function PlayerScreen({route, navigation}: any) {
   });
 
   useEffect(() => {
-    if (player) {
-      player.seek(seek);
+    if (url && player.current) {
+      player.current.seek(seek);
     }
-  }, [seek]);
+  }, [url, seek]);
 
   useEffect(() => {
     VolumeManager.setVolume(1 - volume);
@@ -65,25 +65,20 @@ function PlayerScreen({route, navigation}: any) {
 
   useEffect(() => {
     const volumeListener = VolumeManager.addVolumeListener((result) => {
-       // returns the current volume as a float (0-1)
       setVolume(1 - result.volume);
-  
-      // on android, the result object will also have the keys
-      // music, system, ring, alarm, notification
     });
   
-    // clean up function
     return function () {
-      // remove listener, just call .remove on the volumeListener
-      // EventSubscription. Never forget to clean up your listeners.
       volumeListener.remove();
     }
   }, []);
 
   useEffect(() => {
     return () => {
-      if (player && isSeeking != 0) {
-        player.pause();
+      if (player && isSeeking == 0) {
+        player.current?.pause();
+      } else {
+        player.current?.resume();
       }
     }
   }, [isSeeking]);
@@ -159,11 +154,11 @@ function PlayerScreen({route, navigation}: any) {
   }, [timeoutId]);
 
 
-  useEffect(() => {
-    // when the position changes
-    const percent = (position / duration * 100).toFixed(2) + '%';
-    setPercentage(percent as DimensionValue);
-  }, [position, duration]);
+  // useEffect(() => {
+  //   // when the position changes
+  //   const percent = (position / duration * 100).toFixed(2) + '%';
+  //   setPercentage(percent as DimensionValue);
+  // }, [position, duration]);
 
   const selectAudioTrack = (index: number) => {
     const audioTrack = audioTracks.find((audioTrack) => audioTrack.id === index);
@@ -409,7 +404,7 @@ function PlayerScreen({route, navigation}: any) {
                 <TouchableOpacity
                   onPress={() => {
                     if (!player) return;
-                    player.seek(position - 10);
+                    player.current?.seek(position - 10);
                     handleItemClick();
                   }}
                   className="rounded-full bg-transparent p-2 bottom-0"
@@ -422,9 +417,9 @@ function PlayerScreen({route, navigation}: any) {
                     if (!player) return;
 
                     if (playBackRate > 0) {
-                      player.pause();
+                      player.current?.pause();
                     } else {
-                      player.resume();
+                      player.current?.resume();
                     }
                     handleItemClick();
                   }}
@@ -435,7 +430,7 @@ function PlayerScreen({route, navigation}: any) {
                 <TouchableOpacity
                   onPress={() => {
                     if (!player) return;
-                    player.seek(position + 10);
+                    player.current?.seek(position + 10);
                     handleItemClick();
                   }}
                   className="rounded-full bg-transparent p-2 bottom-0"
@@ -473,53 +468,47 @@ function PlayerScreen({route, navigation}: any) {
               <Text style={{ color: theme.primary }} className="text-lg">{formatTime(position)}</Text>
               <Text style={{ color: theme.primary }} className="text-lg">{formatTime(duration)}</Text>
             </View>
-            </View>
-          </Animated.View>
-        <Video
-          source={{ uri: url }}
-          ref={(ref) => {
-            player = ref;
-          }}
-          fullscreenAutorotate={true}
-          fullscreen={true}
-          controls={false}
-          resizeMode="contain"
-          style={{ width: "100%", height: "100%" }}
-          onLoad={(data: any) => {
-            const audioTracks = data.audioTracks;
-            var subtitles = data.textTracks;
-            setSubtitles(subtitles.map((sub: any) => {
-              return new SubtitleTrackDTO(sub);
-            }));
-            setAudioTracks(audioTracks.map((audio: any) => {
-              return new AudioTrackDTO(audio);
-            }));
-            const audioTrack = audioTracks.find((audioTrack: AudioTrackDTO) => audioTrack.selected === true);
-            setSelectedAudioTrack(audioTrack);
-          }}
-          onPlaybackRateChange={(data: any) => {
-            setPlayBackRate(data.playbackRate);
-          }}
-          onProgress={(data: any) => {
-            setPosition(data.currentTime);
-            setDuration(data.seekableDuration < 0 ? 0 : data.seekableDuration);
-          }}
-          selectedAudioTrack={{
-            type: selectedAudioTrack ? SelectedTrackType.TITLE : SelectedTrackType.DISABLED,
-            value: selectedAudioTrack ? selectedAudioTrack.title : 0
-          }}
-          selectedTextTrack={{
-            type: selectedTextTrack ? SelectedTrackType.TITLE : SelectedTrackType.DISABLED,
-            value: selectedTextTrack ? selectedTextTrack.title : 0
-          }}
-          volume={1}
-        />
-        {/* <Text style={{ position: 'absolute', top: 20, left: 20, color: 'white' }}>
-            Brightness: {brightness.toFixed(2)}
-        </Text>
-        <Text style={{ position: 'absolute', top: 50, left: 20, color: 'white' }}>
-            Volume: {volume.toFixed(2)}
-        </Text> */}
+          </View>
+        </Animated.View>
+        {url && (
+          <Video
+            source={{ uri: url }}
+            ref={player}
+            fullscreenAutorotate={true}
+            fullscreen={true}
+            controls={false}
+            resizeMode="contain"
+            style={{ width: "100%", height: "100%" }}
+            onLoad={(data: any) => {
+              const audioTracks = data.audioTracks;
+              var subtitles = data.textTracks;
+              setSubtitles(subtitles.map((sub: any) => {
+                return new SubtitleTrackDTO(sub);
+              }));
+              setAudioTracks(audioTracks.map((audio: any) => {
+                return new AudioTrackDTO(audio);
+              }));
+              const audioTrack = audioTracks.find((audioTrack: AudioTrackDTO) => audioTrack.selected === true);
+              setSelectedAudioTrack(audioTrack);
+            }}
+            onPlaybackRateChange={(data: any) => {
+              setPlayBackRate(data.playbackRate);
+            }}
+            onProgress={(data: any) => {
+              setPosition(data.currentTime);
+              setDuration(data.seekableDuration < 0 ? 0 : data.seekableDuration);
+            }}
+            selectedAudioTrack={{
+              type: selectedAudioTrack ? SelectedTrackType.TITLE : SelectedTrackType.DISABLED,
+              value: selectedAudioTrack ? selectedAudioTrack.title : 0
+            }}
+            selectedTextTrack={{
+              type: selectedTextTrack ? SelectedTrackType.TITLE : SelectedTrackType.DISABLED,
+              value: selectedTextTrack ? selectedTextTrack.title : 0
+            }}
+            volume={1}
+          />
+        )}
       </TouchableOpacity>
     </SafeAreaView>
   );
