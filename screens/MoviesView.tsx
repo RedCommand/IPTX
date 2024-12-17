@@ -114,16 +114,16 @@ function MoviesViewScreen({ route, navigation }: any): React.JSX.Element {
               if (videoUrl == null) {
                 return;
               }
-              Linking.canOpenURL(videoUrl).then((supported) => {
-                if (!supported) {
-                  globalVars.isPlayer = true;
-                  navigation.push('Player', { url: videoUrl, name: movieInfo?.name });
-                } else {
-                  return Linking.openURL(videoUrl);
-                }
-              }).catch((err) => {
-                console.error('An error occurred', err);
-              });
+              // Linking.canOpenURL(videoUrl).then((supported) => {
+              //   if (!supported) {
+                globalVars.isPlayer = true;
+                navigation.push('Player', { url: videoUrl, name: movieInfo?.name });
+              //   } else {
+              //     return Linking.openURL(videoUrl);
+              //   }
+              // }).catch((err) => {
+              //   console.error('An error occurred', err);
+              // });
             }}>
             <Text style={{ color: theme.primary }}>Play</Text>
           </Button>
