@@ -33,7 +33,6 @@ function SeriesViewScreen({ route, navigation }: any): React.JSX.Element {
   const { info }: { info: SeriesInfoDTO } = route.params;
 
   let theme = getMaterialYouCurrentTheme(isDarkMode);
-  let darkTheme = getMaterialYouCurrentTheme(true);
 
   useEffect(() => {
     if (info) {
@@ -56,8 +55,8 @@ function SeriesViewScreen({ route, navigation }: any): React.JSX.Element {
   }, []);
 
   return (
-    <SafeAreaView style={{ backgroundColor: darkTheme.background, flex: 1 }}>
-      <ImageBackground className='w-full h-full' source={{ uri: seriesInfo?.background }} imageStyle={{ opacity: 0.15 }} resizeMode='cover'>
+    <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
+      <ImageBackground className='w-full h-full' source={{ uri: seriesInfo?.background }} imageStyle={{ opacity: isDarkMode ? 0.15 : 0.25 }} resizeMode='cover'>
         <View className='flex flex-row justify-between'>
         <Text className='text-2xl p-4 font-bold' style={{
           color: theme.primary,
