@@ -79,8 +79,8 @@ android {
         applicationId "com.highest.iptx"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.1"
+        versionCode 3
+        versionName "1.1.1"
     }
     signingConfigs {
         debug {
