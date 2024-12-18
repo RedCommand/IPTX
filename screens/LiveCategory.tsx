@@ -83,7 +83,7 @@ function LiveCategoryScreen({ route, navigation }: any): React.JSX.Element {
               source={{ uri: item.stream_icon }}
               style={{ width: 30, height: 40, borderRadius: 20, marginRight: 10 }}
               resizeMode='contain'
-              onError={(e) => {
+              onError={(e: any) => {
                 console.log('Error loading image: ', e);}}
             />
           ) : null}

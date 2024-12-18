@@ -101,7 +101,7 @@ function SeriesScreen({navigation}: any): React.JSX.Element {
                     </Text>
                   </TouchableOpacity>
                   {editMode && (
-                    <TouchableOpacity onPress={() => hideCategory(category.id)} className='absolute right-3 flex-row items-center'>
+                    <TouchableOpacity onPress={() => hideCategory(category.id)} style={{ position: 'absolute', right: 3 }}>
                       <MaterialCommunityIcons name="delete" size={24} color={theme.primary} />
                     </TouchableOpacity>
                   )}
@@ -121,7 +121,7 @@ function SeriesScreen({navigation}: any): React.JSX.Element {
                         {flag} {name}
                       </Text>
                       {editMode && (
-                        <TouchableOpacity onPress={() => showCategory(category.id)} className='absolute right-3 flex-row items-center'>
+                        <TouchableOpacity onPress={() => showCategory(category.id)} style={{ position: 'absolute', right: 3 }}>
                           <MaterialCommunityIcons name="undo" size={24} color={theme.primary} />
                         </TouchableOpacity>
                       )}

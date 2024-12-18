@@ -1,4 +1,4 @@
-import { DimensionValue, PanResponder, Text, TouchableOpacity, View, useColorScheme } from "react-native";
+import { DimensionValue, PanResponder, StatusBar, Text, TouchableOpacity, View, useColorScheme } from "react-native";
 import { getMaterialYouCurrentTheme } from "../utils/theme";
 import Video, {SelectedTrackType, VideoRef } from "react-native-video";
 import { useEffect, useRef, useState } from "react";
@@ -42,10 +42,12 @@ function PlayerScreen({route, navigation}: any) {
   const [volume, setVolume] = useState(0.5);
   const [brightness, setBrightness] = useState(0.5);
 
-  VolumeManager.showNativeVolumeUI({ enabled: false});
+  VolumeManager.showNativeVolumeUI({ enabled: false });
+  StatusBar.setHidden(true, 'none');
 
   navigation.addListener('beforeRemove', (e: any) => {
     globalVars.isPlayer = false;
+    StatusBar.setHidden(false, 'slide');
   });
 
   useEffect(() => {
@@ -475,13 +477,15 @@ function PlayerScreen({route, navigation}: any) {
             source={{ uri: url }}
             ref={player}
             fullscreenAutorotate={true}
-            fullscreen={true}
             controls={false}
             resizeMode="contain"
             style={{ width: "100%", height: "100%" }}
             onLoad={(data: any) => {
               const audioTracks = data.audioTracks;
               var subtitles = data.textTracks;
+
+              console.log(audioTracks)
+
               setSubtitles(subtitles.map((sub: any) => {
                 return new SubtitleTrackDTO(sub);
               }));
@@ -499,12 +503,12 @@ function PlayerScreen({route, navigation}: any) {
               setDuration(data.seekableDuration < 0 ? 0 : data.seekableDuration);
             }}
             selectedAudioTrack={{
-              type: selectedAudioTrack ? SelectedTrackType.TITLE : SelectedTrackType.DISABLED,
-              value: selectedAudioTrack ? selectedAudioTrack.title : 0
+              type: (selectedAudioTrack != null && selectedAudioTrack?.id != null) ? SelectedTrackType.INDEX : SelectedTrackType.INDEX,
+              value: (selectedAudioTrack != null && selectedAudioTrack?.id != null) ? selectedAudioTrack.id : 0
             }}
             selectedTextTrack={{
-              type: selectedTextTrack ? SelectedTrackType.TITLE : SelectedTrackType.DISABLED,
-              value: selectedTextTrack ? selectedTextTrack.title : 0
+              type: (selectedTextTrack && selectedTextTrack?.id) ? SelectedTrackType.INDEX : SelectedTrackType.INDEX,
+              value: (selectedTextTrack && selectedTextTrack?.id) ? selectedTextTrack.id : 0
             }}
             volume={1}
           />
