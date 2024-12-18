@@ -3,7 +3,11 @@ export function getFlagEmoji(countryCode: string) {
   if (!code) {
     return countryCode;
   }
-  if (code.toUpperCase() === 'EN' || code.toUpperCase() === 'ENG' || code.toUpperCase() === 'US') {
+  if (
+    code.toUpperCase() === 'EN' ||
+    code.toUpperCase() === 'ENG' ||
+    code.toUpperCase() === 'US'
+  ) {
     code = 'US';
   }
   if (code.toUpperCase() === 'IND') {
@@ -40,10 +44,18 @@ export function getFlagEmoji(countryCode: string) {
   if (/\d/.test(countryCode)) {
     return countryCode;
   }
-  if (code.length > 2 && (code.toUpperCase().indexOf('MULTI') > -1 || code.toUpperCase().indexOf('WORLD') > -1)) {
-    return '🌐'
-  } else if (code.length > 2 && (code.toUpperCase().indexOf('MULTI') == -1 || code.toUpperCase().indexOf('WORLD') == -1)) {
-    return countryCode
+  if (
+    code.length > 2 &&
+    (code.toUpperCase().indexOf('MULTI') > -1 ||
+      code.toUpperCase().indexOf('WORLD') > -1)
+  ) {
+    return '🌐';
+  } else if (
+    code.length > 2 &&
+    (code.toUpperCase().indexOf('MULTI') == -1 ||
+      code.toUpperCase().indexOf('WORLD') == -1)
+  ) {
+    return countryCode;
   }
   const codePoints = code
     .toUpperCase()

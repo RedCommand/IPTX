@@ -1,21 +1,28 @@
-import { DimensionValue, PanResponder, StatusBar, Text, TouchableOpacity, View, useColorScheme } from "react-native";
-import { getMaterialYouCurrentTheme } from "../utils/theme";
-import Video, {SelectedTrackType, VideoRef } from "react-native-video";
-import { useEffect, useRef, useState } from "react";
-import { AudioTrackDTO } from "../dto/audioTrack.dto";
-import { SubtitleTrackDTO } from "../dto/subtitleTrack.dto";
-import { globalVars } from '../App';
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Animated } from 'react-native';
+import {
+  DimensionValue,
+  PanResponder,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+  useColorScheme,
+} from 'react-native';
+import {getMaterialYouCurrentTheme} from '../utils/theme';
+import Video, {SelectedTrackType, VideoRef} from 'react-native-video';
+import {useEffect, useRef, useState} from 'react';
+import {AudioTrackDTO} from '../dto/audioTrack.dto';
+import {SubtitleTrackDTO} from '../dto/subtitleTrack.dto';
+import {globalVars} from '../App';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {Animated} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { formatTime } from "../utils/formatTime";
-import { Slider } from "@rneui/base";
-import { getLanguageName } from "../utils/languages";
-import { VolumeManager } from 'react-native-volume-manager';
+import {formatTime} from '../utils/formatTime';
+import {Slider} from '@rneui/base';
+import {getLanguageName} from '../utils/languages';
+import {VolumeManager} from 'react-native-volume-manager';
 import DeviceBrightness from '@adrianso/react-native-device-brightness';
 
 function PlayerScreen({route, navigation}: any) {
-
   const [controls, setControls] = useState<boolean>(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [fadeAnim] = useState(new Animated.Value(0));
@@ -30,8 +37,10 @@ function PlayerScreen({route, navigation}: any) {
   // const [percentage, setPercentage] = useState<DimensionValue>('0%');
   const [seek, setSeek] = useState<number>(0);
   const [isSeeking, setIsSeeking] = useState<number>(0);
-  const [selectedAudioTrack, setSelectedAudioTrack] = useState<AudioTrackDTO | null>(null);
-  const [selectedTextTrack, setSelectedTextTrack] = useState<SubtitleTrackDTO | null>(null);
+  const [selectedAudioTrack, setSelectedAudioTrack] =
+    useState<AudioTrackDTO | null>(null);
+  const [selectedTextTrack, setSelectedTextTrack] =
+    useState<SubtitleTrackDTO | null>(null);
   const [popupOpened, setPopupOpened] = useState<number>(0);
 
   const player = useRef<VideoRef | null>(null);
@@ -42,7 +51,7 @@ function PlayerScreen({route, navigation}: any) {
   const [volume, setVolume] = useState(0.5);
   const [brightness, setBrightness] = useState(0.5);
 
-  VolumeManager.showNativeVolumeUI({ enabled: false });
+  VolumeManager.showNativeVolumeUI({enabled: false});
   StatusBar.setHidden(true, 'none');
 
   navigation.addListener('beforeRemove', (e: any) => {
@@ -64,15 +73,14 @@ function PlayerScreen({route, navigation}: any) {
     DeviceBrightness.setBrightnessLevel(1 - brightness);
   }, [brightness]);
 
-
   useEffect(() => {
-    const volumeListener = VolumeManager.addVolumeListener((result) => {
+    const volumeListener = VolumeManager.addVolumeListener(result => {
       setVolume(1 - result.volume);
     });
-  
+
     return function () {
       volumeListener.remove();
-    }
+    };
   }, []);
 
   useEffect(() => {
@@ -82,9 +90,8 @@ function PlayerScreen({route, navigation}: any) {
       } else {
         player.current?.resume();
       }
-    }
+    };
   }, [isSeeking]);
-
 
   const handleItemClick = () => {
     Animated.timing(fadeAnim, {
@@ -108,7 +115,6 @@ function PlayerScreen({route, navigation}: any) {
     }, 2500);
     setTimeoutId(id);
   };
-
 
   const handleScreenClick = () => {
     if (controls) {
@@ -155,7 +161,6 @@ function PlayerScreen({route, navigation}: any) {
     };
   }, [timeoutId]);
 
-
   // useEffect(() => {
   //   // when the position changes
   //   const percent = (position / duration * 100).toFixed(2) + '%';
@@ -163,31 +168,45 @@ function PlayerScreen({route, navigation}: any) {
   // }, [position, duration]);
 
   const selectAudioTrack = (index: number) => {
-    const audioTrack = audioTracks.find((audioTrack) => audioTrack.id === index);
+    const audioTrack = audioTracks.find(audioTrack => audioTrack.id === index);
     setSelectedAudioTrack(audioTrack || null);
   };
   const selectTextTrack = (index: number) => {
-    const subtitleTrack = subtitles.find((sub: SubtitleTrackDTO) => sub.id === index);
+    const subtitleTrack = subtitles.find(
+      (sub: SubtitleTrackDTO) => sub.id === index,
+    );
     setSelectedTextTrack(subtitleTrack || null);
   };
 
-
   const openAudioPopup = (options: AudioTrackDTO[]) => {
-    const audioTrack = audioTracks.find((audioTrack: AudioTrackDTO) => audioTrack.selected === true);
-    const selectedTrack = selectedAudioTrack == null ? audioTrack?.id : selectedAudioTrack.id;
+    const audioTrack = audioTracks.find(
+      (audioTrack: AudioTrackDTO) => audioTrack.selected === true,
+    );
+    const selectedTrack =
+      selectedAudioTrack == null ? audioTrack?.id : selectedAudioTrack.id;
 
     return (
-      <View className={'h-full z-10 flex-col items-center justify-center w-full bg-black/50 '}>
-        <View className="justify-center items-center rounded-lg p-4" style={{backgroundColor: theme.background}}>
+      <View
+        className={
+          'h-full z-10 flex-col items-center justify-center w-full bg-black/50 '
+        }>
+        <View
+          className="justify-center items-center rounded-lg p-4"
+          style={{backgroundColor: theme.background}}>
           <View className="flex flex-row justify-between items-center pb-4">
-            <Text style={{ color: theme.primary }} className="text-lg font-bold">Select an Audio Track</Text>
+            <Text style={{color: theme.primary}} className="text-lg font-bold">
+              Select an Audio Track
+            </Text>
             <TouchableOpacity
               onPress={() => {
                 setPopupOpened(0);
               }}
-              className="rounded-full bg-transparent pl-4 bottom-0"
-            >
-              <MaterialCommunityIcons name={"close"} size={25} color={theme.icon} />
+              className="rounded-full bg-transparent pl-4 bottom-0">
+              <MaterialCommunityIcons
+                name={'close'}
+                size={25}
+                color={theme.icon}
+              />
             </TouchableOpacity>
           </View>
           {options.map((option: AudioTrackDTO) => {
@@ -199,35 +218,50 @@ function PlayerScreen({route, navigation}: any) {
                 }}
                 key={option.id}
                 className="rounded-lg p-2 w-full text-center m-1"
-                style={{backgroundColor: option.id == selectedTrack ? theme.secondary : theme.card}}
-              >
-                <Text
-                  style={{color: theme.text}}
-                >{option.title} - {getLanguageName(option.language)}</Text>
+                style={{
+                  backgroundColor:
+                    option.id == selectedTrack ? theme.secondary : theme.card,
+                }}>
+                <Text style={{color: theme.text}}>
+                  {option.title} - {getLanguageName(option.language)}
+                </Text>
               </TouchableOpacity>
             );
           })}
         </View>
       </View>
-    )
+    );
   };
 
   const openSubtitlePopup = (options: SubtitleTrackDTO[]) => {
-    const subtitleTrack = subtitles.find((sub: SubtitleTrackDTO) => sub.selected === true);
-    const selectedTrack = selectedTextTrack == null ? subtitleTrack?.id : selectedTextTrack.id;
+    const subtitleTrack = subtitles.find(
+      (sub: SubtitleTrackDTO) => sub.selected === true,
+    );
+    const selectedTrack =
+      selectedTextTrack == null ? subtitleTrack?.id : selectedTextTrack.id;
 
     return (
-      <View className={'h-full z-10 flex-col items-center justify-center w-full bg-black/50 '}>
-        <View className="justify-center items-center rounded-lg p-4" style={{backgroundColor: theme.background}}>
+      <View
+        className={
+          'h-full z-10 flex-col items-center justify-center w-full bg-black/50 '
+        }>
+        <View
+          className="justify-center items-center rounded-lg p-4"
+          style={{backgroundColor: theme.background}}>
           <View className="flex flex-row justify-between items-center pb-4">
-            <Text style={{ color: theme.primary }} className="text-lg font-bold">Select Subtitles</Text>
+            <Text style={{color: theme.primary}} className="text-lg font-bold">
+              Select Subtitles
+            </Text>
             <TouchableOpacity
               onPress={() => {
                 setPopupOpened(0);
               }}
-              className="rounded-full bg-transparent pl-4 bottom-0"
-            >
-              <MaterialCommunityIcons name={"close"} size={25} color={theme.icon} />
+              className="rounded-full bg-transparent pl-4 bottom-0">
+              <MaterialCommunityIcons
+                name={'close'}
+                size={25}
+                color={theme.icon}
+              />
             </TouchableOpacity>
           </View>
           {options.map((option: SubtitleTrackDTO) => {
@@ -244,15 +278,19 @@ function PlayerScreen({route, navigation}: any) {
                 }}
                 key={option.id}
                 className="rounded-lg p-2 w-5/12 text-center m-1"
-                style={{backgroundColor: option.id == selectedTrack ? theme.secondary : theme.card}}
-              >
-                <Text>{option.title} - {getLanguageName(option.language)}</Text>
+                style={{
+                  backgroundColor:
+                    option.id == selectedTrack ? theme.secondary : theme.card,
+                }}>
+                <Text>
+                  {option.title} - {getLanguageName(option.language)}
+                </Text>
               </TouchableOpacity>
             );
           })}
         </View>
       </View>
-    )
+    );
   };
 
   return (
@@ -261,238 +299,288 @@ function PlayerScreen({route, navigation}: any) {
         activeOpacity={1}
         style={{
           backgroundColor: '#000000',
-          width: "100%",
-          height: "100%",
+          width: '100%',
+          height: '100%',
         }}
         onPress={() => {
           handleScreenClick();
-        }}
-      >
-        {popupOpened == 1 ?
-          <View className={'h-full absolute z-10 flex-1 flex-col items-center justify-center w-full bg-black/50 ' + (popupOpened == 1 ? '' : 'pointer-events-none')}>
+        }}>
+        {popupOpened == 1 ? (
+          <View
+            className={
+              'h-full absolute z-10 flex-1 flex-col items-center justify-center w-full bg-black/50 ' +
+              (popupOpened == 1 ? '' : 'pointer-events-none')
+            }>
             {openAudioPopup(audioTracks)}
           </View>
-          : popupOpened == 2 ?
-          <View className={'h-full absolute z-10 flex-1 flex-col items-center justify-center w-full bg-black/50' + (popupOpened == 2 ? '' : 'pointer-events-none')}>
+        ) : popupOpened == 2 ? (
+          <View
+            className={
+              'h-full absolute z-10 flex-1 flex-col items-center justify-center w-full bg-black/50' +
+              (popupOpened == 2 ? '' : 'pointer-events-none')
+            }>
             {openSubtitlePopup(subtitles)}
           </View>
-          : null
-        }
-          <Animated.View
-            style={{
-              opacity: fadeAnim,
-            }}
-            className={'h-full absolute z-10 flex-1 flex-col justify-between items-stretch w-full bg-black/50 ' + (controls ? '' : 'pointer-events-none')}
-          >
-            <View>
-              <View className="flex flex-row justify-between">
-                <View className="flex flex-row align-middle text-center items-center">
-                  <TouchableOpacity
-                    onPress={() => {
-                      navigation.goBack();
-                    }}
-                    className="rounded-full bg-transparent p-2 bottom-0"
-                  >
-                    <MaterialCommunityIcons name={"chevron-left"} size={40} color={theme.primary} />
-                  </TouchableOpacity>
-                  <Text style={{ color: theme.primary }} className="text-lg font-bold items-start">
-                    {name}
-                  </Text>
-                </View>
-                <View className="flex flex-row">
-                  {audioTracks.length > 1 ?
-                    <TouchableOpacity
-                      className="rounded-full bg-transparent p-2 bottom-0"
-                      onPress={() => {
-                        if (popupOpened == 1)
-                          setPopupOpened(0);
-                        else {
-                          const track: AudioTrackDTO = (audioTracks.find((audioTrack) => audioTrack.id === selectedAudioTrack?.id) || audioTracks.find((audioTrack) => audioTrack.selected === true)) as AudioTrackDTO;
-                          selectAudioTrack(track.id);
-                          setPopupOpened(1);
-                          Animated.timing(fadeAnim, {
-                            toValue: 0,
-                            duration: 100,
-                            useNativeDriver: true,
-                          }).start(() => {
-                            setControls(false);
-                          });
-                        }
-                      }}
-                    >
-                      <MaterialCommunityIcons name={"translate"} size={40} color={theme.primary} />
-                    </TouchableOpacity>
-                  : null}
-                  {subtitles.length > 0 ?
-                    <TouchableOpacity
-                      className="rounded-full bg-transparent p-2 bottom-0"
-                      onPress={() => {
-                        if (popupOpened == 2)
-                          setPopupOpened(0);
-                        else {
-                          setPopupOpened(2);
-                          Animated.timing(fadeAnim, {
-                            toValue: 0,
-                            duration: 100,
-                            useNativeDriver: true,
-                          }).start(() => {
-                            setControls(false);
-                          });
-                        }
-                      }}
-                    >
-                      <MaterialCommunityIcons name={"subtitles"} size={40} color={theme.primary} />
-                    </TouchableOpacity>
-                  : null}
-                </View>
-              </View>
-            </View>
-            <View className="flex flex-row justify-between h-1/4 items-center">
-              <View className="justify-end flex flex-col h-full items-start">
-                <View className="flex gap-2 items-center">
-                  <MaterialCommunityIcons name={brightness == 1 ?
-                                                "brightness-5" :
-                                                brightness <= 0.5 ? "brightness-7" :
-                                                "brightness-6"
-                                              } color={theme.primary} size={24} />
-                  <Slider
-                    key="brightnessSlider"
-                    value={brightness}
-                    maximumValue={1}
-                    step={0.05}
-                    onValueChange={(brightness) => {
-                      setBrightness(brightness);
-                      handleItemClick();
-                    }}
-                    orientation="vertical"
-                    allowTouchTrack={true}
-                    thumbTintColor={theme.primary}
-                    minimumTrackTintColor={theme.text}
-                    maximumTrackTintColor={theme.secondary}
-                    thumbStyle={{ width: 15, height: 15, borderRadius: 15 }}
-                    style={{ height: "80%" }}
+        ) : null}
+        <Animated.View
+          style={{
+            opacity: fadeAnim,
+          }}
+          className={
+            'h-full absolute z-10 flex-1 flex-col justify-between items-stretch w-full bg-black/50 ' +
+            (controls ? '' : 'pointer-events-none')
+          }>
+          <View>
+            <View className="flex flex-row justify-between">
+              <View className="flex flex-row align-middle text-center items-center">
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.goBack();
+                  }}
+                  className="rounded-full bg-transparent p-2 bottom-0">
+                  <MaterialCommunityIcons
+                    name={'chevron-left'}
+                    size={40}
+                    color={theme.primary}
                   />
-                </View>
+                </TouchableOpacity>
+                <Text
+                  style={{color: theme.primary}}
+                  className="text-lg font-bold items-start">
+                  {name}
+                </Text>
               </View>
-              <View className="justify-end flex flex-col h-full items-end">
-                <View className="flex gap-2 items-center">
-                  <MaterialCommunityIcons name={volume == 1 ?
-                                                "volume-mute" :
-                                                  volume <= 0.5 ? "volume-high" :
-                                                "volume-medium"
-                                              } color={theme.primary} size={24} />
-                  <Slider
-                    key="volumeSlider"
-                    value={volume}
-                    maximumValue={1}
-                    step={0.01}
-                    onValueChange={(volume) => {
-                      setVolume(volume);
-                      handleItemClick();
-                    }}
-                    orientation="vertical"
-                    allowTouchTrack={true}
-                    thumbTintColor={theme.primary}
-                    minimumTrackTintColor={theme.text}
-                    maximumTrackTintColor={theme.secondary}
-                    thumbStyle={{ width: 15, height: 15, borderRadius: 15 }}
-                    style={{ height: "80%" }}
-                  />
-                </View>
-              </View>
-            </View>
-            <View className="items-center">
               <View className="flex flex-row">
-                <TouchableOpacity
-                  onPress={() => {
-                    if (!player) return;
-                    player.current?.seek(position - 10);
-                    handleItemClick();
-                  }}
-                  className="rounded-full bg-transparent p-2 bottom-0"
-                >
-                  <MaterialCommunityIcons name="rewind-10" size={40} color={theme.primary} />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => {
-                    if (!player) return;
-
-                    if (playBackRate > 0) {
-                      player.current?.pause();
-                    } else {
-                      player.current?.resume();
-                    }
-                    handleItemClick();
-                  }}
-                  className="rounded-full bg-transparent p-2 bottom-0"
-                >
-                  <MaterialCommunityIcons name={playBackRate > 0 ? "pause" : "play"} size={40} color={theme.primary} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (!player) return;
-                    player.current?.seek(position + 10);
-                    handleItemClick();
-                  }}
-                  className="rounded-full bg-transparent p-2 bottom-0"
-                >
-                  <MaterialCommunityIcons name="fast-forward-10" size={40} color={theme.primary} />
-                </TouchableOpacity>
+                {audioTracks.length > 1 ? (
+                  <TouchableOpacity
+                    className="rounded-full bg-transparent p-2 bottom-0"
+                    onPress={() => {
+                      if (popupOpened == 1) setPopupOpened(0);
+                      else {
+                        const track: AudioTrackDTO = (audioTracks.find(
+                          audioTrack =>
+                            audioTrack.id === selectedAudioTrack?.id,
+                        ) ||
+                          audioTracks.find(
+                            audioTrack => audioTrack.selected === true,
+                          )) as AudioTrackDTO;
+                        selectAudioTrack(track.id);
+                        setPopupOpened(1);
+                        Animated.timing(fadeAnim, {
+                          toValue: 0,
+                          duration: 100,
+                          useNativeDriver: true,
+                        }).start(() => {
+                          setControls(false);
+                        });
+                      }
+                    }}>
+                    <MaterialCommunityIcons
+                      name={'translate'}
+                      size={40}
+                      color={theme.primary}
+                    />
+                  </TouchableOpacity>
+                ) : null}
+                {subtitles.length > 0 ? (
+                  <TouchableOpacity
+                    className="rounded-full bg-transparent p-2 bottom-0"
+                    onPress={() => {
+                      if (popupOpened == 2) setPopupOpened(0);
+                      else {
+                        setPopupOpened(2);
+                        Animated.timing(fadeAnim, {
+                          toValue: 0,
+                          duration: 100,
+                          useNativeDriver: true,
+                        }).start(() => {
+                          setControls(false);
+                        });
+                      }
+                    }}>
+                    <MaterialCommunityIcons
+                      name={'subtitles'}
+                      size={40}
+                      color={theme.primary}
+                    />
+                  </TouchableOpacity>
+                ) : null}
               </View>
+            </View>
+          </View>
+          <View className="flex flex-row justify-between h-1/4 items-center">
+            <View className="justify-end flex flex-col h-full items-start">
+              <View className="flex gap-2 items-center">
+                <MaterialCommunityIcons
+                  name={
+                    brightness == 1
+                      ? 'brightness-5'
+                      : brightness <= 0.5
+                      ? 'brightness-7'
+                      : 'brightness-6'
+                  }
+                  color={theme.primary}
+                  size={24}
+                />
+                <Slider
+                  key="brightnessSlider"
+                  value={brightness}
+                  maximumValue={1}
+                  step={0.05}
+                  onValueChange={brightness => {
+                    setBrightness(brightness);
+                    handleItemClick();
+                  }}
+                  orientation="vertical"
+                  allowTouchTrack={true}
+                  thumbTintColor={theme.primary}
+                  minimumTrackTintColor={theme.text}
+                  maximumTrackTintColor={theme.secondary}
+                  thumbStyle={{width: 15, height: 15, borderRadius: 15}}
+                  style={{height: '80%'}}
+                />
+              </View>
+            </View>
+            <View className="justify-end flex flex-col h-full items-end">
+              <View className="flex gap-2 items-center">
+                <MaterialCommunityIcons
+                  name={
+                    volume == 1
+                      ? 'volume-mute'
+                      : volume <= 0.5
+                      ? 'volume-high'
+                      : 'volume-medium'
+                  }
+                  color={theme.primary}
+                  size={24}
+                />
+                <Slider
+                  key="volumeSlider"
+                  value={volume}
+                  maximumValue={1}
+                  step={0.01}
+                  onValueChange={volume => {
+                    setVolume(volume);
+                    handleItemClick();
+                  }}
+                  orientation="vertical"
+                  allowTouchTrack={true}
+                  thumbTintColor={theme.primary}
+                  minimumTrackTintColor={theme.text}
+                  maximumTrackTintColor={theme.secondary}
+                  thumbStyle={{width: 15, height: 15, borderRadius: 15}}
+                  style={{height: '80%'}}
+                />
+              </View>
+            </View>
+          </View>
+          <View className="items-center">
+            <View className="flex flex-row">
+              <TouchableOpacity
+                onPress={() => {
+                  if (!player) return;
+                  player.current?.seek(position - 10);
+                  handleItemClick();
+                }}
+                className="rounded-full bg-transparent p-2 bottom-0">
+                <MaterialCommunityIcons
+                  name="rewind-10"
+                  size={40}
+                  color={theme.primary}
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => {
+                  if (!player) return;
+
+                  if (playBackRate > 0) {
+                    player.current?.pause();
+                  } else {
+                    player.current?.resume();
+                  }
+                  handleItemClick();
+                }}
+                className="rounded-full bg-transparent p-2 bottom-0">
+                <MaterialCommunityIcons
+                  name={playBackRate > 0 ? 'pause' : 'play'}
+                  size={40}
+                  color={theme.primary}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  if (!player) return;
+                  player.current?.seek(position + 10);
+                  handleItemClick();
+                }}
+                className="rounded-full bg-transparent p-2 bottom-0">
+                <MaterialCommunityIcons
+                  name="fast-forward-10"
+                  size={40}
+                  color={theme.primary}
+                />
+              </TouchableOpacity>
+            </View>
             <Slider
               key={duration}
               value={position}
               maximumValue={duration}
               allowTouchTrack={true}
-              onSlidingComplete={
-                (value) => {
-                  setSeek(value);
-                  setIsSeeking(0);
-                }
-              }
-              onValueChange={(position) => {
+              onSlidingComplete={value => {
+                setSeek(value);
+                setIsSeeking(0);
+              }}
+              onValueChange={position => {
                 setPosition(position);
                 handleItemClick();
               }}
-              onSlidingStart={
-                (value) => {
-                  setIsSeeking(value);
-                }}
+              onSlidingStart={value => {
+                setIsSeeking(value);
+              }}
               thumbTintColor={theme.primary}
               minimumTrackTintColor={theme.secondary}
               maximumTrackTintColor={theme.text}
-              thumbStyle={{ width: 30, height: 30, borderRadius: 15 }}
-              style={{ width: "91.6667%" }}
-
+              thumbStyle={{width: 30, height: 30, borderRadius: 15}}
+              style={{width: '91.6667%'}}
             />
             <View className="flex flex-row justify-between items-stretch w-full p-2">
-              <Text style={{ color: theme.primary }} className="text-lg">{formatTime(position)}</Text>
-              <Text style={{ color: theme.primary }} className="text-lg">{formatTime(duration)}</Text>
+              <Text style={{color: theme.primary}} className="text-lg">
+                {formatTime(position)}
+              </Text>
+              <Text style={{color: theme.primary}} className="text-lg">
+                {formatTime(duration)}
+              </Text>
             </View>
           </View>
         </Animated.View>
         {url && (
           <Video
-            source={{ uri: url }}
+            source={{uri: url}}
             ref={player}
             fullscreenAutorotate={true}
             controls={false}
             resizeMode="contain"
-            style={{ width: "100%", height: "100%" }}
+            style={{width: '100%', height: '100%'}}
             onLoad={(data: any) => {
               const audioTracks = data.audioTracks;
               var subtitles = data.textTracks;
 
-              console.log(audioTracks)
+              console.log(audioTracks);
 
-              setSubtitles(subtitles.map((sub: any) => {
-                return new SubtitleTrackDTO(sub);
-              }));
-              setAudioTracks(audioTracks.map((audio: any) => {
-                return new AudioTrackDTO(audio);
-              }));
-              const audioTrack = audioTracks.find((audioTrack: AudioTrackDTO) => audioTrack.selected === true);
+              setSubtitles(
+                subtitles.map((sub: any) => {
+                  return new SubtitleTrackDTO(sub);
+                }),
+              );
+              setAudioTracks(
+                audioTracks.map((audio: any) => {
+                  return new AudioTrackDTO(audio);
+                }),
+              );
+              const audioTrack = audioTracks.find(
+                (audioTrack: AudioTrackDTO) => audioTrack.selected === true,
+              );
               setSelectedAudioTrack(audioTrack);
             }}
             onPlaybackRateChange={(data: any) => {
@@ -500,15 +588,29 @@ function PlayerScreen({route, navigation}: any) {
             }}
             onProgress={(data: any) => {
               setPosition(data.currentTime);
-              setDuration(data.seekableDuration < 0 ? 0 : data.seekableDuration);
+              setDuration(
+                data.seekableDuration < 0 ? 0 : data.seekableDuration,
+              );
             }}
             selectedAudioTrack={{
-              type: (selectedAudioTrack != null && selectedAudioTrack?.id != null) ? SelectedTrackType.INDEX : SelectedTrackType.INDEX,
-              value: (selectedAudioTrack != null && selectedAudioTrack?.id != null) ? selectedAudioTrack.id : 0
+              type:
+                selectedAudioTrack != null && selectedAudioTrack?.id != null
+                  ? SelectedTrackType.INDEX
+                  : SelectedTrackType.INDEX,
+              value:
+                selectedAudioTrack != null && selectedAudioTrack?.id != null
+                  ? selectedAudioTrack.id
+                  : 0,
             }}
             selectedTextTrack={{
-              type: (selectedTextTrack && selectedTextTrack?.id) ? SelectedTrackType.INDEX : SelectedTrackType.INDEX,
-              value: (selectedTextTrack && selectedTextTrack?.id) ? selectedTextTrack.id : 0
+              type:
+                selectedTextTrack && selectedTextTrack?.id
+                  ? SelectedTrackType.INDEX
+                  : SelectedTrackType.INDEX,
+              value:
+                selectedTextTrack && selectedTextTrack?.id
+                  ? selectedTextTrack.id
+                  : 0,
             }}
             volume={1}
           />

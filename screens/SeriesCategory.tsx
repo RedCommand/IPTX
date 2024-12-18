@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   Text,
@@ -9,21 +9,21 @@ import {
   useWindowDimensions,
 } from 'react-native';
 
-import { getMaterialYouCurrentTheme } from '../utils/theme';
-import { retrieveCategoryInfo } from '../utils/retrieveInfo';
-import { MediaType } from '../utils/MediaType';
-import { getFlagEmoji } from '../utils/flagEmoji';
-import { Card } from 'react-native-paper';
-import { SeriesDTO } from '../dto/media/series.dto';
-import { useIsFocused } from '@react-navigation/native';
-import { retrieveData } from '../utils/data';
+import {getMaterialYouCurrentTheme} from '../utils/theme';
+import {retrieveCategoryInfo} from '../utils/retrieveInfo';
+import {MediaType} from '../utils/MediaType';
+import {getFlagEmoji} from '../utils/flagEmoji';
+import {Card} from 'react-native-paper';
+import {SeriesDTO} from '../dto/media/series.dto';
+import {useIsFocused} from '@react-navigation/native';
+import {retrieveData} from '../utils/data';
 
-function SeriesCategoryScreen({ route, navigation }: any): React.JSX.Element {
+function SeriesCategoryScreen({route, navigation}: any): React.JSX.Element {
   const [categories, setCategories] = useState<SeriesDTO[]>([]);
   const [profile, setProfile] = useState<string | null>('');
   const [loading, setLoading] = useState(true);
   const isDarkMode = useColorScheme() === 'dark';
-  const { category } = route.params;
+  const {category} = route.params;
   const [visibleCategories, setVisibleCategories] = useState<SeriesDTO[]>([]);
   const CHUNK_SIZE = 30;
 
@@ -32,28 +32,31 @@ function SeriesCategoryScreen({ route, navigation }: any): React.JSX.Element {
   const focused = useIsFocused();
 
   useEffect(() => {
-    retrieveData('name').then((name) => {
+    retrieveData('name').then(name => {
       if (categories.length === 0 || name !== profile) {
         setCategories([]);
         setProfile(name);
-        retrieveCategoryInfo(MediaType.SERIES, category.id).then((data) => {
-            setCategories(data);
-            setVisibleCategories(data.slice(0, CHUNK_SIZE));
-            setLoading(false);
-            return;
+        retrieveCategoryInfo(MediaType.SERIES, category.id).then(data => {
+          setCategories(data);
+          setVisibleCategories(data.slice(0, CHUNK_SIZE));
+          setLoading(false);
+          return;
         });
       } else {
         console.log('Categories already loaded');
       }
-    })
+    });
   }, [focused]);
   const handleLoadMore = () => {
     const currentLength = visibleCategories.length;
-    const nextChunk = categories.slice(currentLength, currentLength + CHUNK_SIZE);
+    const nextChunk = categories.slice(
+      currentLength,
+      currentLength + CHUNK_SIZE,
+    );
     setVisibleCategories([...visibleCategories, ...nextChunk]);
   };
 
-  const renderItem = ({ item }: { item: SeriesDTO }) => {
+  const renderItem = ({item}: {item: SeriesDTO}) => {
     var flag = item.name.split(' ')[0];
     var name = item.name.split(' ').slice(1).join(' ');
     if (flag.length < 2) {
@@ -65,10 +68,10 @@ function SeriesCategoryScreen({ route, navigation }: any): React.JSX.Element {
     return (
       <Card
         key={item.id}
-        style={{ backgroundColor: theme.card }}
+        style={{backgroundColor: theme.card}}
         className={'rounded-lg w-44 h-[17rem] relative flex flex-col'}
         onPress={async () => {
-          navigation.push('View', { series: item });
+          navigation.push('View', {series: item});
         }}>
         <View>
           <Card.Title
@@ -110,14 +113,18 @@ function SeriesCategoryScreen({ route, navigation }: any): React.JSX.Element {
   const numColumns = Math.floor(windowWidth / 180);
 
   return (
-    <SafeAreaView className='h-full flex ' style={{ backgroundColor: theme.background }}>
-      <Text className='text-2xl p-4 font-bold' style={{
-        color: theme.primary,
-      }}>
+    <SafeAreaView
+      className="h-full flex "
+      style={{backgroundColor: theme.background}}>
+      <Text
+        className="text-2xl p-4 font-bold"
+        style={{
+          color: theme.primary,
+        }}>
         {category.name}
       </Text>
       {loading ? (
-        <View className='flex-1 pb-4 items-center justify-center align-middle'>
+        <View className="flex-1 pb-4 items-center justify-center align-middle">
           <ActivityIndicator size="large" color={theme.primary} />
         </View>
       ) : (
@@ -126,11 +133,15 @@ function SeriesCategoryScreen({ route, navigation }: any): React.JSX.Element {
           numColumns={numColumns}
           data={visibleCategories}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={item => item.id.toString()}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
-          columnWrapperStyle={{ gap: 7 }}
-          contentContainerStyle={{ justifyContent: 'center', alignItems: 'center', gap: 7}}
+          columnWrapperStyle={{gap: 7}}
+          contentContainerStyle={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 7,
+          }}
         />
       )}
     </SafeAreaView>

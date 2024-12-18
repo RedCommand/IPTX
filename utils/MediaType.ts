@@ -1,5 +1,5 @@
 export enum MediaType {
-    MOVIE = "movie/",
-    SERIES = "series/",
-    LIVE = ""
+  MOVIE = 'movie/',
+  SERIES = 'series/',
+  LIVE = '',
 }

@@ -1,7 +1,7 @@
-import { useColorScheme } from 'react-native';
+import {useColorScheme} from 'react-native';
 import MaterialYou from 'react-native-material-you-colors';
-import type { MaterialYouPalette } from 'react-native-material-you-colors';
-import { retrieveData } from './data';
+import type {MaterialYouPalette} from 'react-native-material-you-colors';
+import {retrieveData} from './data';
 
 const fallbackSeedColor = '#00ffc8';
 const palette = MaterialYou.getMaterialYouPalette(fallbackSeedColor);
@@ -27,15 +27,15 @@ function generateTheme(palette: MaterialYouPalette) {
     icon: palette.system_accent1[3], // shade 100
     secondary: palette.system_accent1[6], // shade 400
   };
-  return { light, dark };
+  return {light, dark};
 }
 
 export const getMaterialYouThemes = () => {
   const theme = generateTheme(palette);
   return theme;
-}
+};
 
-export const getMaterialYouCurrentTheme = (isDarkMode: boolean)  => {
+export const getMaterialYouCurrentTheme = (isDarkMode: boolean) => {
   const styles = generateTheme(palette);
 
   // const isDark = await JSON.parse(await retrieveData('theme') || '');
@@ -45,5 +45,5 @@ export const getMaterialYouCurrentTheme = (isDarkMode: boolean)  => {
   // } else if (isDark == 'light') {
   //   return styles.light;
   // }
-    return isDarkMode ? styles.dark : styles.light;
-}
+  return isDarkMode ? styles.dark : styles.light;
+};

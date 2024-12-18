@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -9,23 +9,23 @@ import {
   View,
 } from 'react-native';
 
-import { getMaterialYouCurrentTheme } from '../utils/theme';
-import { retrieveCategoryInfo } from '../utils/retrieveInfo';
-import { MediaType } from '../utils/MediaType';
-import { getFlagEmoji } from '../utils/flagEmoji';
-import { LiveDTO } from '../dto/media/live.dto';
-import { buildURL } from '../utils/buildUrl';
-import { globalVars } from '../App';
+import {getMaterialYouCurrentTheme} from '../utils/theme';
+import {retrieveCategoryInfo} from '../utils/retrieveInfo';
+import {MediaType} from '../utils/MediaType';
+import {getFlagEmoji} from '../utils/flagEmoji';
+import {LiveDTO} from '../dto/media/live.dto';
+import {buildURL} from '../utils/buildUrl';
+import {globalVars} from '../App';
 import FitImage from 'react-native-fit-image';
-import { useIsFocused } from '@react-navigation/native';
-import { retrieveData } from '../utils/data';
+import {useIsFocused} from '@react-navigation/native';
+import {retrieveData} from '../utils/data';
 
-function LiveCategoryScreen({ route, navigation }: any): React.JSX.Element {
+function LiveCategoryScreen({route, navigation}: any): React.JSX.Element {
   const [categories, setCategories] = useState<LiveDTO[]>([]);
   const [profile, setProfile] = useState<string | null>('');
   const [loading, setLoading] = useState(true);
   const isDarkMode = useColorScheme() === 'dark';
-  const { category } = route.params;
+  const {category} = route.params;
   const [visibleCategories, setVisibleCategories] = useState<LiveDTO[]>([]);
   const CHUNK_SIZE = 30;
 
@@ -34,29 +34,32 @@ function LiveCategoryScreen({ route, navigation }: any): React.JSX.Element {
   const focused = useIsFocused();
 
   useEffect(() => {
-    retrieveData('name').then((name) => {
+    retrieveData('name').then(name => {
       if (categories.length === 0 || name !== profile) {
         setCategories([]);
         setProfile(name);
-        retrieveCategoryInfo(MediaType.LIVE, category.id).then((data) => {
-            setCategories(data);
-            setVisibleCategories(data.slice(0, CHUNK_SIZE));
-            setLoading(false);
-            return;
+        retrieveCategoryInfo(MediaType.LIVE, category.id).then(data => {
+          setCategories(data);
+          setVisibleCategories(data.slice(0, CHUNK_SIZE));
+          setLoading(false);
+          return;
         });
       } else {
         console.log('Categories already loaded');
       }
-    })
+    });
   }, [focused]);
-  
+
   const handleLoadMore = () => {
     const currentLength = visibleCategories.length;
-    const nextChunk = categories.slice(currentLength, currentLength + CHUNK_SIZE);
+    const nextChunk = categories.slice(
+      currentLength,
+      currentLength + CHUNK_SIZE,
+    );
     setVisibleCategories([...visibleCategories, ...nextChunk]);
   };
 
-  const renderItem = ({ item }: { item: LiveDTO }) => {
+  const renderItem = ({item}: {item: LiveDTO}) => {
     var flag = item.name.split(' ')[0];
     var name = item.name.split(' ').slice(1).join(' ');
     if (flag.length < 2) {
@@ -66,41 +69,50 @@ function LiveCategoryScreen({ route, navigation }: any): React.JSX.Element {
     flag = getFlagEmoji(flag);
 
     return (
-      <View className='w-screen justify-center align-middle items-center'>
+      <View className="w-screen justify-center align-middle items-center">
         <TouchableOpacity
-        className={
-          "rounded-lg h-16 m-2 flex transition-all duration-500 flex-row justify-start items-center pl-4 w-11/12"
-        }
-        style={{ backgroundColor: theme.card }}
+          className={
+            'rounded-lg h-16 m-2 flex transition-all duration-500 flex-row justify-start items-center pl-4 w-11/12'
+          }
+          style={{backgroundColor: theme.card}}
           onPress={async () => {
             const videoUrl = await buildURL(MediaType.LIVE, item.stream_id);
             globalVars.isPlayer = true;
-            navigation.push('Player', { url: videoUrl, name: item.name });
-          }}
-        >
+            navigation.push('Player', {url: videoUrl, name: item.name});
+          }}>
           {item.stream_icon ? (
             <FitImage
-              source={{ uri: item.stream_icon }}
-              style={{ width: 30, height: 40, borderRadius: 20, marginRight: 10 }}
-              resizeMode='contain'
+              source={{uri: item.stream_icon}}
+              style={{width: 30, height: 40, borderRadius: 20, marginRight: 10}}
+              resizeMode="contain"
               onError={(e: any) => {
-                console.log('Error loading image: ', e);}}
+                console.log('Error loading image: ', e);
+              }}
             />
           ) : null}
-          <Text style={{ color: theme.text }}>{flag} {name}</Text>
+          <Text style={{color: theme.text}}>
+            {flag} {name}
+          </Text>
         </TouchableOpacity>
       </View>
     );
   };
 
   return (
-    <SafeAreaView style={{ backgroundColor: theme.background }}
-    className="flex-1 flex-col h-full">
-      <Text style={{ color: theme.primary, fontSize: 20, fontWeight: 'bold', padding: 10 }}>
+    <SafeAreaView
+      style={{backgroundColor: theme.background}}
+      className="flex-1 flex-col h-full">
+      <Text
+        style={{
+          color: theme.primary,
+          fontSize: 20,
+          fontWeight: 'bold',
+          padding: 10,
+        }}>
         {category.name}
       </Text>
       {loading ? (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
           <ActivityIndicator size="large" color={theme.primary} />
         </View>
       ) : (
@@ -108,11 +120,14 @@ function LiveCategoryScreen({ route, navigation }: any): React.JSX.Element {
           <FlatList
             data={visibleCategories}
             renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={item => item.id.toString()}
             onEndReached={handleLoadMore}
             onEndReachedThreshold={0.5}
-            className='w-full h-full'
-            contentContainerStyle={{ justifyContent: 'center', alignItems: 'center' }}
+            className="w-full h-full"
+            contentContainerStyle={{
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
           />
         </View>
       )}
